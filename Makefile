@@ -1,3 +1,4 @@
+NO_LUAJIT := true
 #---------------------------------------------------------------------------------
 # Clear the implicit built in rules
 #---------------------------------------------------------------------------------
@@ -8,6 +9,10 @@ $(error "Please set DEVKITPPC in your environment. export DEVKITPPC=<path to>dev
 endif
 
 include $(DEVKITPPC)/wii_rules
+
+ifeq ($(strip $(PORTLIBS_PATH)),)
+PORTLIBS_PATH := $(abspath $(DEVKITPPC)/../portlibs)
+endif
 
 #---------------------------------------------------------------------------------
 # TARGET is the name of the output
@@ -44,7 +49,7 @@ SOURCES		:=	src \
 				src/lib/GRRLIB/grrlib
 
 DATA		:=	data 
-INCLUDES    :=  src/lib/ src/lib/pngu
+INCLUDES    :=  src/lib/ src/lib/pngu src/lib/GRRLIB
 
 #---------------------------------------------------------------------------------
 # options for code generation
@@ -74,12 +79,11 @@ endif
 
 ifeq ($(strip $(NO_LUAJIT)),true)
 # just use regular lua
-LIBS    += -llua5.1
+LIBS    += -llua
 else
-LIBS    += -llua5.1
-#LIBS	 += -lluajit
-#CFLAGS   += -DUSE_LUAJIT
-#CXXFLAGS += -DUSE_LUAJIT
+LIBS	 += -lluajit
+CFLAGS   += -DUSE_LUAJIT
+CXXFLAGS += -DUSE_LUAJIT
 endif
 LIBS     +=  -lSDL # SDL is used for threads
 
